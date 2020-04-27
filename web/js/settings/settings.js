@@ -1,69 +1,72 @@
 const settings = (() => {
+    const settingsKey = 'settings';
+    const revision = 1;
+    let isProviderSupported = _isSupported();
 
-    const _default = {
-        input: {
-            keyboard: {
-                map: {
-                    37: KEY.LEFT,
-                    38: KEY.UP,
-                    39: KEY.RIGHT,
-                    40: KEY.DOWN,
-                    90: KEY.A, // z
-                    88: KEY.B, // x
-                    67: KEY.X, // c
-                    86: KEY.Y, // v
-                    65: KEY.L, // a
-                    83: KEY.R, // s
-                    13: KEY.START, // enter
-                    16: KEY.SELECT, // shift
-                    // non-game
-                    81: KEY.QUIT, // q
-                    87: KEY.JOIN, // w
-                    75: KEY.SAVE, // k
-                    76: KEY.LOAD, // l
-                    49: KEY.PAD1, // 1
-                    50: KEY.PAD2, // 2
-                    51: KEY.PAD3, // 3
-                    52: KEY.PAD4, // 4
-                    70: KEY.FULL, // f
-                    72: KEY.HELP, // h
-                    220: KEY.STATS, // backspace
-                }
-            }
-        }
-    }
-    let _defaultKeys = Object.keys(_default);
+    // !to do something if localStorage is unavailable
 
-    let settings = {};
+    let settings = {
+        _version: revision
+    };
 
     const _import = () => {
-
     }
 
-    const _export = (key) => {
-        return JSON.stringify(_default[key], null, 2);
-    }
+    const _export = (data) => JSON.stringify(data, null, 2);
 
     const load = () => {
-        let _settings = {};
+        if (!isProviderSupported) return;
 
-        for (let key of _defaultKeys) {
-            if (!localStorage.getItem('settings.' + key)) {
-                localStorage.setItem('settings.' + key, _export(key));
-            }
-            _settings[key] = JSON.parse(localStorage.getItem('settings.'+key));
+        if (!_hasSettings()) _save();
+
+        settings = _load();
+
+        if (revision !== settings._version) {
+            // !to handle this as migrations
         }
-
-        settings = _settings;
     }
 
     const get = () => settings
+
+    const loadOr = (key, default_) => {
+        if (!isProviderSupported) return default_;
+        if (settings.hasOwnProperty(key)) return settings[key];
+
+        settings[key] = default_;
+        _save();
+
+        return default_;
+    }
+
+    function _hasSettings() {
+        return localStorage.getItem(settingsKey);
+    }
+
+    function _save() {
+        localStorage.setItem(settingsKey, _export(settings));
+    }
+
+    function _load() {
+        return JSON.parse(localStorage.getItem(settingsKey));
+    }
+
+    function _isSupported() {
+        const testKey = 'test_' + Math.random().toString(36).substring(5);
+        try {
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
 
     load();
 
     return {
         get,
+        loadOr,
         import: _import,
         export: _export
     }
-})(KEY);
+})(JSON, localStorage, Math);
