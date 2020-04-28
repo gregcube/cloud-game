@@ -127,7 +127,7 @@ const gameList = (() => {
 
         // overflow marquee
         $('.menu-item .pick').removeClass('pick');
-        $(`.menu-item:eq(${idx}) span`).addClass('pick');
+        $(`.menu-item:eq(${idx + 1}) span`).addClass('pick');
 
         gameIndex = idx;
     };
