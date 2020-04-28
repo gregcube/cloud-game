@@ -436,7 +436,31 @@ body {
     left: 0;
 }
 
+#alphabet-pager {
+  position: absolute;
+  color: #fff;
+  overflow: hidden;
+  background-color: #000;
+  z-index: 10;
+}
 
+#alphabet-pager .letter {
+  width: 15px;
+  padding: 5px;
+  display: inline-block;
+}
+
+#letter-choice {
+  background-color: #9167dc;
+  display: block;
+  position: absolute;
+  opacity: 0.75;
+  width: 25px;
+  height: 25px;
+  display: none;
+  top: 4px;
+  z-index: 11;
+}
 
 @font-face {
     font-family: 'Roboto'; /*a name to be used later*/

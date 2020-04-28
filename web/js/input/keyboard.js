@@ -6,6 +6,7 @@
 const keyboard = (() => {
 
     const KEYBOARD_MAP = {
+        27: KEY.ESC,
         37: KEY.LEFT,
         38: KEY.UP,
         39: KEY.RIGHT,

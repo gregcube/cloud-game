@@ -248,6 +248,13 @@
                         case KEY.DOWN:
                             gameList.startGamePickerTimer(key === KEY.UP);
                             break;
+                        case KEY.LEFT:
+                        case KEY.RIGHT:
+                            gameList.pickLetter(key === KEY.LEFT);
+                            break;
+                        case KEY.ESC:
+                            gameList.resetGameList();
+                            break;
                     }
                 },
                 keyRelease: (key) => {

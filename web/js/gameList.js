@@ -5,12 +5,15 @@
 const gameList = (() => {
     // state
     let games = [];
+    let allGames = [];
     let gameIndex = 1;
     let gamePickTimer = null;
 
     // UI
     const listBox = $('#menu-container');
     const menuItemChoice = $('#menu-item-choice');
+    const alphabetPager = $('#alphabet-pager');
+    const letterChoice = $('#letter-choice');
 
     const MENU_TOP_POSITION = 102;
     let menuTop = MENU_TOP_POSITION;
@@ -22,10 +25,78 @@ const gameList = (() => {
     const render = () => {
         log.debug('[games] load game menu');
 
-        listBox.html(games
-            .map(game => `<div class="menu-item unselectable" unselectable="on"><div><span>${game}</span></div></div>`)
-            .join('')
-        );
+        alphabetPager.append('<div class="menu-item">');
+
+        for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) {
+          let letter = String.fromCharCode(i);
+
+          alphabetPager
+            .children('.menu-item')
+            .append(`<span class="letter" data-letter="${letter}">${letter}</span>`);
+        }
+
+        alphabetPager.append('</div>');
+
+        populateListBox(games);
+    };
+
+    const populateListBox = (gamelist) => {
+      listBox.html(
+        gamelist
+          .map(game => `<div class="menu-item unselectable" unselectable="on"><div><span>${game}</span></div></div>`)
+          .join(''));
+    };
+
+    const resetGameList = () => {
+      if (allGames.length) {
+        letterChoice.hide();
+        alphabetPager.animate({left: 0}, 200);
+        alphabetPager.find('.active').removeClass('active');
+        setGames(allGames);
+        populateListBox(games);
+        pickGame(1);
+      }
+    };
+
+    const pickLetter = (leftDirection) => {
+      let cur = alphabetPager.find('.active');
+      letterChoice.show();
+
+      // Keep a copy of all games.
+      if (!allGames.length) allGames = [...games];
+
+      if (!cur.length) {
+        cur = alphabetPager
+          .children()
+          .children('.letter:first-child')
+          .addClass('active')
+          .first();
+
+        alphabetPager.animate({left: 0});
+      }
+      else {
+        cur.removeClass('active');
+
+        if (leftDirection) {
+          cur = cur.next().addClass('active').first();
+          if (cur.length) alphabetPager.animate({left: '-=25px'}, 200);
+        }
+        else {
+          cur = cur.prev().addClass('active').first();
+          if (cur.length) alphabetPager.animate({left: '+=25px'}, 200);
+        }
+      }
+
+      let letter;
+
+      if (letter = cur.data('letter')) {
+        let filtered = allGames
+          .filter(game => game.toUpperCase().startsWith(cur.data('letter')));
+
+        setGames(filtered);
+        pickGame(0);
+        populateListBox(filtered);
+      }
     };
 
     const show = () => {
@@ -103,9 +174,11 @@ const gameList = (() => {
         startGamePickerTimer: startGamePickerTimer,
         stopGamePickerTimer: stopGamePickerTimer,
         pickGame: pickGame,
+        pickLetter: pickLetter,
         show: show,
         hide: hide,
         set: setGames,
+        resetGameList: resetGameList,
         getCurrentGame: () => games[gameIndex]
     }
 })($, event, log);
