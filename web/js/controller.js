@@ -273,7 +273,7 @@
                             startGame();
                             break;
                         case KEY.QUIT:
-                            popup('You are already in menu screen!');
+                            gameList.resetGameList();
                             break;
                         case KEY.LOAD:
                             popup('Lets play to load game!');
