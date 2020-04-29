@@ -437,7 +437,7 @@ body {
 }
 
 #alphabet-pager {
-  position: absolute;
+  position: relative;
   color: #fff;
   overflow: hidden;
   background-color: #000;

@@ -50,7 +50,7 @@ const gameList = (() => {
     const resetGameList = () => {
       if (allGames.length) {
         letterChoice.hide();
-        alphabetPager.animate({left: 0}, 200);
+        alphabetPager.animate({marginLeft: 0}, 200);
         alphabetPager.find('.active').removeClass('active');
         setGames(allGames);
         populateListBox(games);
@@ -66,37 +66,43 @@ const gameList = (() => {
       if (!allGames.length) allGames = [...games];
 
       if (!cur.length) {
-        cur = alphabetPager
+        alphabetPager
           .children()
           .children('.letter:first-child')
           .addClass('active')
-          .first();
-
-        alphabetPager.animate({left: 0});
+          .animate({marginLeft: 0}, 200);
       }
       else {
         cur.removeClass('active');
 
         if (leftDirection) {
-          cur = cur.next().addClass('active').first();
-          if (cur.length) alphabetPager.animate({left: '-=25px'}, 200);
+          if (cur.data('letter') == 'Z') {
+            cur.parent().children(':first-child').addClass('active');
+            alphabetPager.animate({marginLeft: 0}, 200);
+          }
+          else {
+            cur.next().addClass('active');
+            alphabetPager.animate({marginLeft: '-=25px'}, 200);
+          }
         }
         else {
-          cur = cur.prev().addClass('active').first();
-          if (cur.length) alphabetPager.animate({left: '+=25px'}, 200);
+          if (cur.data('letter') == 'A') {
+            cur.parent().children(':last-child').addClass('active');
+            alphabetPager.animate({marginLeft: '-625px'}, 200);
+          }
+          else {
+            cur.prev().addClass('active');
+            alphabetPager.animate({marginLeft: '+=25px'}, 200);
+          }
         }
       }
 
-      let letter;
+      let letter = alphabetPager.find('.active').data('letter');
+      let list = allGames.filter(game => game.toUpperCase().startsWith(letter));
 
-      if (letter = cur.data('letter')) {
-        let filtered = allGames
-          .filter(game => game.toUpperCase().startsWith(cur.data('letter')));
-
-        setGames(filtered);
-        pickGame(0);
-        populateListBox(filtered);
-      }
+      setGames(list);
+      pickGame(0);
+      populateListBox(list);
     };
 
     const show = () => {
